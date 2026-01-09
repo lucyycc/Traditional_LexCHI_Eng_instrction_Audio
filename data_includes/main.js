@@ -19,7 +19,7 @@ CheckPreloaded( startsWith("LexTale_trials") )
 // ----- CALIBRATION -----
 PennController("calibration",
     newText("calibInfo",
-        "To start, we are checking that you can hear the sound. Please use your headphones and press the “Listen” button. You will hear an electronic sound. <br> Once the sound has played, press “Continue” if you have heard it at an appropriate volume.  If you have not heard the sound, check your headphones or your sound volume and reload the page until you can hear the sound."
+        "To start, we are checking that you can hear the sound. Please use your headphones and press the “Listen” button. You will hear an electronic sound. <br> <br> Once the sound has played, press “Continue” if you have heard it at an appropriate volume.  If you have not heard the sound, check your headphones or your sound volume and reload the page until you can hear the sound."
     )
     .css("margin-bottom", "20px")
     .center()
