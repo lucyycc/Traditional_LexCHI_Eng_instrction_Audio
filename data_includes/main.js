@@ -89,14 +89,20 @@ Template("stimuli.csv", row =>
         // Record play request time
         getVar("playRequestTime").set(v => Date.now()),
 
-        // Add replay button
-        newButton("replay", "Replay Audio").center().print(),
-
-        // Event handler for replay
-        getButton("replay").callback(
-            getAudio("audio").play(),
-            getVar("ReplayCount").set( v => v + 1 ) // add 1 to replay count
-        ),
+        // Add replay button and limit the replay count to 3
+        newButton("replay", "Replay Audio")
+            .center()
+            .print()
+            .callback(
+                getVar("ReplayCount").set(v => v+1)
+                    .test.is(4)
+                    .success(
+                        getButton("replay").disable() // disables after 3 clicks
+                    )
+                    .failure(
+                        getAudio("audio").play()      // replays audio
+                    )
+            ),
 
         // Wait for initial audio to start
         getAudio("audio").wait("first"),
