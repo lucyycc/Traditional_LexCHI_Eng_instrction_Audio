@@ -76,49 +76,77 @@ PennController("LexTale_instructions",
 // ----- MAIN TRIALS -----
 Template("stimuli.csv", row =>
     newTrial("LexTale_trials",
-        // Initialize timing and subject vars
+        // Initialize variables
         newVar("audioStart").global().set(0),
         newVar("playRequestTime").global().set(0),
         newVar("RT_yes").global().set("NA"),
         newVar("RT_no").global().set("NA"),
-       
-      // play the trial audio
-        newAudio("audio", row.AudioFile)
-            .play(),
+        newVar("ReplayCount").global().set(0), // start with zero replays
 
-        // Choice labels
-        newText("no", "NOT a Mandarin word")
-            .css("font-size", "40px")
-            .css("font-family", "Avenir")
-            .css("white-space", "nowrap")   // ✅ prevents wrapping
-            .color("red")
-            .center()
-            .bold(),
-
-        newText("yes", "A Mandarin word")
-            .css("font-size", "40px")
-            .css("font-family", "Avenir")
-            .css("white-space", "nowrap")   // ✅ prevents wrapping
-            .color("green")
-            .center()
-            .bold(),
+        // Play the trial audio
+        newAudio("audio", row.AudioFile).center().play(),
 
         // Record play request time
         getVar("playRequestTime").set(v => Date.now()),
 
-        // Layout choices
-     
-        newCanvas("choiceCanvas", 800, 800)
-           .add(-200, 150, getText("no"))
-           .add(450, 150, getText("yes"))
-           .print(),
+        // Add replay button
+        newButton("replay", "Replay Audio").center().print(),
 
-        // Selector: wait for response. On response, compute RT relative to actual audio start.
+        // Event handler for replay
+        getButton("replay").callback(
+            getAudio("audio").play(),
+            getVar("ReplayCount").set( v => v + 1 ) // add 1 to replay count
+        ),
+
+        // Wait for initial audio to start
+        getAudio("audio").wait("first"),
+
+        // Set audio start timestamp
+        getVar("audioStart").set(v => Date.now()),
+        
+        newCanvas("spacer", 1, 40) // 40px tall blank space
+        .print(),
+
+        // Boxed Yes/No choices
+        newCanvas("noBox", 430, 100)
+            .css("background-color", "#FBB")
+            .css("border", "2px solid red")
+            .add(15, 30,
+                newText("no", "NOT a Mandarin word")
+                    .css("font-size", "40px")
+                    .css("font-family", "Avenir")
+                    .css("white-space", "nowrap")
+                    .color("red")
+                    .bold()
+            )
+            .print(),
+        newCanvas("yesBox", 400, 100)
+            .css("background-color", "#BFB")
+            .css("border", "2px solid green")
+            .add(50, 30,
+                newText("yes", "A Mandarin word")
+                    .css("font-size", "40px")
+                    .css("font-family", "Avenir")
+                    .css("white-space", "nowrap")
+                    .color("green")
+                    .bold()
+            )
+            .print(),
+
+        newCanvas("choiceCanvas", 900, 120)
+            .add(-20, 0, getCanvas("noBox"))
+            .add(490, 0, getCanvas("yesBox"))
+            .center()
+            .print(),
+
+        // Selector for boxed choices
         newSelector("choice")
-            .add(getText("no"), getText("yes"))
+            .add(getCanvas("noBox"), getCanvas("yesBox"))
             .log()
             .wait(),
-        getSelector("choice").test.selected(getText("yes"))
+
+        // Record RT on selection
+        getSelector("choice").test.selected(getCanvas("yesBox"))
             .success(
                 getVar("RT_yes").set(v => Date.now() - getVar("audioStart").value),
                 getVar("RT_no").set("NA")
@@ -128,16 +156,10 @@ Template("stimuli.csv", row =>
                 getVar("RT_yes").set("NA")
             ),
 
-
-        // Wait for audio to start
-        getAudio("audio").wait("first"),
-
-        // Set actual audio start timestamp
-        getVar("audioStart").set(v => Date.now()),
-        // Log RT and latency
+        // Log RTs and Replay count
         getVar("RT_yes").log(),
         getVar("RT_no").log(),
-        getVar("AudioLatency").log()  // If you set this somewhere else
+        getVar("ReplayCount").log()
     )
     .log("Stimulus", row.Stimulus)
     .log("Type", row.Type)
@@ -147,8 +169,8 @@ Template("stimuli.csv", row =>
     .log("Subject", getVar("Subject"))
     .log("RT_yes", getVar("RT_yes"))
     .log("RT_no", getVar("RT_no"))
+    .log("ReplayCount", getVar("ReplayCount")) // logs number of replays
 );
-
 // ----- CLOSING -----
 PennController("closing",
     newText("thanks", "<p>Thank you for participating!</p>").print(),
