@@ -19,12 +19,12 @@ CheckPreloaded( startsWith("LexTale_trials") )
 // ----- CALIBRATION -----
 PennController("calibration",
     newText("calibInfo",
-        "We are calibrating for potential audio latency. Please use your headphones and press the “Start Calibration” button. You will hear a sound, and after playback, the “Continue” button will appear."
+        "To start, we are checking that you can hear the sound. Please use your headphones and press the “Listen” button. You will hear an electronic sound. <br> Once the sound has played, press “Continue” if you have heard it at an appropriate volume.  If you have not heard the sound, check your headphones or your sound volume and reload the page until you can hear the sound."
     )
     .css("margin-bottom", "20px")
     .center()
     .print(),
-    newButton("StartCalibration", "Start Calibration")
+    newButton("StartCalibration", "Listen")
         .center()
         .css("margin-bottom", "20px")
         .print()
