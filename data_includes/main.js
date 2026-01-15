@@ -88,7 +88,10 @@ Template("stimuli.csv", row =>
 
         // Record play request time
         getVar("playRequestTime").set(v => Date.now()),
-
+        
+        // Wait for initial audio to start
+        getAudio("audio").wait("first"),
+        
         // Add replay button and limit the replay count to 3
         newButton("replay", "Replay Audio")
             .center()
@@ -104,10 +107,7 @@ Template("stimuli.csv", row =>
                     )
             ),
 
-        // Wait for initial audio to start
-        getAudio("audio").wait("first"),
-
-        // Set audio start timestamp
+          // Set audio start timestamp
         getVar("audioStart").set(v => Date.now()),
         
         newCanvas("spacer", 1, 40) // 40px tall blank space
